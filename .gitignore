@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+
+# Local data files (contain chat history — don't expose publicly)
+chat_history.json
+agents.json
+
+# IDE
+.vscode/
