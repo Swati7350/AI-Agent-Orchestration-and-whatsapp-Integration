@@ -234,7 +234,7 @@ with st.sidebar:
         )
     with col2:
         st.markdown("**Swati Gupta**")
-        st.markdown("AI & ML Developer")
+        st.markdown("🤖 AI | ML | Agentic AI Developer")
 
     st.markdown(
         "📧 [swati.3999@gmail.com](mailto:swati.3999@gmail.com)"
