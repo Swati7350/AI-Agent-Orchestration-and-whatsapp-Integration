@@ -19,12 +19,10 @@ class RequestState(BaseModel):
 from fastapi import FastAPI
 from ai_agent import get_response_from_ai_agent
 
-# Only Groq models (free)
+# Only Groq models (free developer tier)
 ALLOWED_MODEL_NAMES = [
-    "llama-3.3-70b-versatile",
-    "llama3-70b-8192",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it"
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
 ]
 
 app = FastAPI(title="LangGraph AI Agent")

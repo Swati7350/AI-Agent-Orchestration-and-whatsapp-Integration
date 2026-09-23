@@ -249,10 +249,8 @@ with left_col:
     )
 
     MODEL_NAMES_GROQ = [
-        "llama-3.3-70b-versatile",
-        "llama3-70b-8192",
-        "mixtral-8x7b-32768",
-        "gemma2-9b-it"
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
     ]
 
     provider = st.radio(
@@ -428,7 +426,7 @@ with right_col:
             "content": user_message
         })
         llm = ChatGroq(
-            model="llama-3.3-70b-versatile"
+            model="openai/gpt-oss-20b"
         )
 
         agents = st.session_state.agents
