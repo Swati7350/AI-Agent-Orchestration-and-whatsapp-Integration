@@ -229,7 +229,7 @@ with st.sidebar:
     col1, col2 = st.columns([1, 2])
     with col1:
         st.image(
-            "https://github.com/Swati7350.png",
+            "assets/Gemini_Generated_Image_t2wcwpt2wcwpt2wc.png",
             width=60
         )
     with col2:
