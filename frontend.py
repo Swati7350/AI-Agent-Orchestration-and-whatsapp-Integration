@@ -346,51 +346,37 @@ with left_col:
         placeholder="9876543210"
     )
 
-    if st.button("🟢 Send via WhatsApp"):
+    if phone.strip():
+        itinerary = None
+        messages = st.session_state.chats[st.session_state.current_chat]
+        if isinstance(messages, list):
+            for msg in reversed(messages):
+                if isinstance(msg, dict) and msg.get("role") == "assistant":
+                    itinerary = msg.get("content")
+                    break
 
-        if not phone.strip():
-            st.warning("Enter phone number")
-
-        else:
-
-            itinerary = None
-
-            messages = st.session_state.chats[st.session_state.current_chat]
-
-            if isinstance(messages, list):
-
-                for msg in reversed(messages):
-
-                    if isinstance(msg, dict) and msg.get("role") == "assistant":
-                        itinerary = msg.get("content")
-                        break
-
-            if not itinerary:
-                st.warning("No valid assistant response found to send.")
-
+        if itinerary:
+            import urllib.parse
+            clean_phone = phone.strip().replace(" ", "").replace("-", "")
+            if not clean_phone.startswith("+"):
+                if len(clean_phone) == 10:
+                    clean_phone = "91" + clean_phone
             else:
-                import urllib.parse
-                # Clean phone number — remove spaces, dashes, +
-                clean_phone = phone.strip().replace(" ", "").replace("-", "")
-                if not clean_phone.startswith("+"):
-                    # assume India if no country code
-                    if len(clean_phone) == 10:
-                        clean_phone = "91" + clean_phone
-                else:
-                    clean_phone = clean_phone.lstrip("+")
+                clean_phone = clean_phone.lstrip("+")
 
-                encoded_msg = urllib.parse.quote(itinerary[:1000])
-                whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
+            encoded_msg = urllib.parse.quote(itinerary[:1000])
+            whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
 
-                st.markdown(
-                    f'<a href="{whatsapp_url}" target="_blank">'
-                    f'<button style="background-color:#25D366;color:white;'
-                    f'border:none;padding:10px 20px;border-radius:5px;'
-                    f'font-size:16px;cursor:pointer;">'
-                    f'📲 Open WhatsApp & Send</button></a>',
-                    unsafe_allow_html=True
-                )
-                st.info("Click the button above — WhatsApp will open with the message pre-filled. Just hit Send!")
+            st.markdown(
+                f'<a href="{whatsapp_url}" target="_blank">'
+                f'<button style="background-color:#25D366;color:white;'
+                f'border:none;padding:10px 20px;border-radius:5px;'
+                f'font-size:16px;cursor:pointer;">'
+                f'📲 Open WhatsApp & Send</button></a>',
+                unsafe_allow_html=True
+            )
+        else:
+            st.caption("Chat with an agent first, then share the response via WhatsApp.")
 
 def toggle_chats():
     st.session_state.show_chats = (
@@ -441,7 +427,7 @@ with right_col:
 
 
     user_message = st.chat_input(
-        "Message agent..."
+        "e.g. Help me with travel plans from Delhi to Rishikesh"
     )
     
     if user_message:
