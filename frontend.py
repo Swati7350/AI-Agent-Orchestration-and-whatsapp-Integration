@@ -346,41 +346,44 @@ with left_col:
         placeholder="9876543210"
     )
 
-    if phone.strip():
-        itinerary = None
-        messages = st.session_state.chats[st.session_state.current_chat]
-        if isinstance(messages, list):
-            for msg in reversed(messages):
-                if isinstance(msg, dict) and msg.get("role") == "assistant":
-                    itinerary = msg.get("content")
-                    break
+    import urllib.parse
 
-        if itinerary:
-            import urllib.parse
-            clean_phone = phone.strip().replace(" ", "").replace("-", "")
-            if not clean_phone.startswith("+"):
-                if len(clean_phone) == 10:
-                    clean_phone = "91" + clean_phone
-            else:
-                clean_phone = clean_phone.lstrip("+")
+    itinerary = None
+    messages = st.session_state.chats[st.session_state.current_chat]
+    if isinstance(messages, list):
+        for msg in reversed(messages):
+            if isinstance(msg, dict) and msg.get("role") == "assistant":
+                itinerary = msg.get("content")
+                break
 
-            encoded_msg = urllib.parse.quote(itinerary[:1000])
-            whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
-
-            st.markdown(
-                f'<a href="{whatsapp_url}" target="_blank">'
-                f'<button style="background-color:#25D366;color:white;'
-                f'border:none;padding:10px 20px;border-radius:5px;'
-                f'font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px;">'
-                f'<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">'
-                f'<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>'
-                f'<path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.862L.057 23.428a.75.75 0 00.921.921l5.569-1.474A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.666-.5-5.198-1.377l-.372-.215-3.304.875.876-3.307-.234-.385A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>'
-                f'</svg>'
-                f' Open WhatsApp & Send</button></a>',
-                unsafe_allow_html=True
-            )
+    # Build WhatsApp URL
+    if phone.strip() and itinerary:
+        clean_phone = phone.strip().replace(" ", "").replace("-", "")
+        if not clean_phone.startswith("+"):
+            if len(clean_phone) == 10:
+                clean_phone = "91" + clean_phone
         else:
-            st.caption("Chat with an agent first, then share the response via WhatsApp.")
+            clean_phone = clean_phone.lstrip("+")
+        encoded_msg = urllib.parse.quote(itinerary[:1000])
+        whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
+    elif itinerary:
+        encoded_msg = urllib.parse.quote(itinerary[:1000])
+        whatsapp_url = f"https://wa.me/?text={encoded_msg}"
+    else:
+        whatsapp_url = "https://wa.me/"
+
+    st.markdown(
+        f'<a href="{whatsapp_url}" target="_blank">'
+        f'<button style="background-color:#25D366;color:white;'
+        f'border:none;padding:10px 20px;border-radius:5px;'
+        f'font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px;margin-top:8px;">'
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">'
+        f'<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>'
+        f'<path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.862L.057 23.428a.75.75 0 00.921.921l5.569-1.474A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.666-.5-5.198-1.377l-.372-.215-3.304.875.876-3.307-.234-.385A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>'
+        f'</svg>'
+        f' Send via WhatsApp</button></a>',
+        unsafe_allow_html=True
+    )
 
 def toggle_chats():
     st.session_state.show_chats = (
