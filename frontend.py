@@ -267,12 +267,6 @@ with left_col:
         "Allow Web Search"
     )
 
-    user_query = st.text_area(
-        "Ask a Test query with AI:",
-        height=150,
-        placeholder="Ask Anything!"
-    )
-
     spacer, button_col = st.columns([3, 2])
 
     with button_col:
@@ -312,59 +306,54 @@ with left_col:
                     "Enter agent name"
                 )
 
-    # ---------------- TEST AGENT ----------------
-    if st.button("Ask Agent!"):
+    # ===================================
+    # 📲 SHARE DISCUSSION
+    # ===================================
+    st.divider()
 
-        if user_query.strip():
+    st.markdown("### 📲 Share Discussion")
 
-            import requests
+    st.info(
+        "Send your finalized details to WhatsApp.\n\n"
+        "✔ Enter 10-digit mobile number (India)\n\n"
+        "✔ Or include country code (+91XXXXXXXXXX)\n\n"
+        "✔ Click send to receive your discussion instantly"
+    )
 
-            payload = {
-                "model_name":
-                    selected_model,
-                "model_provider":
-                    provider,
-                "system_prompt":
-                    system_prompt,
-                "messages":
-                    [user_query],
-                "allow_search":
-                    allow_web_search
-            }
+    phone = st.text_input(
+        "WhatsApp Number",
+        placeholder="9876543210"
+    )
 
-            API_URL = os.getenv(
-                "BACKEND_URL",
-                "http://127.0.0.1:9999"
-            ) + "/chat"
+    if st.button("🟢 Send via WhatsApp"):
 
-            response = requests.post(
-                API_URL,
-                json=payload
-            )
+        if not phone.strip():
+            st.warning("Enter phone number")
 
-            if response.status_code == 200:
+        else:
 
-                response_data = (
-                    response.json()
-                )
+            itinerary = None
 
-                if "error" in response_data:
+            messages = st.session_state.chats[st.session_state.current_chat]
 
-                    st.error(
-                        response_data["error"]
-                    )
+            if isinstance(messages, list):
 
-                else:
+                for msg in reversed(messages):
 
-                    st.subheader(
-                        "**Agent Response**"
-                    )
+                    if isinstance(msg, dict) and msg.get("role") == "assistant":
+                        itinerary = msg.get("content")
+                        break
 
-                    st.markdown(
-                        response_data[
-                            "response"
-                        ]
-                    )
+            if not itinerary:
+                st.warning("No valid assistant response found to send.")
+
+            else:
+                try:
+                    send_whatsapp_message(phone, str(itinerary))
+                    st.success("Discussion sent on WhatsApp!")
+
+                except Exception as e:
+                    st.error(f"Failed to send WhatsApp message: {e}")
 
 def toggle_chats():
     st.session_state.show_chats = (
@@ -471,50 +460,3 @@ with right_col:
             st.session_state.show_whatsapp = True
 
         st.rerun()
-st.divider()
-
-st.markdown("### 📲 Share Discussion")
-
-st.info(
-    "Send your finalized details to WhatsApp.\n\n"
-    "✔ Enter 10-digit mobile number (India)\n\n"
-    "✔ Or include country code (+91XXXXXXXXXX)\n\n"
-    "✔ Click send to receive your discussion instantly"
-)
-
-phone = st.text_input(
-    "WhatsApp Number",
-    placeholder="9876543210"
-)
-
-if st.button("🟢 Send via WhatsApp"):
-
-    if not phone.strip():
-        st.warning("Enter phone number")
-
-    else:
-
-        # 🔍 safely extract last assistant message
-        itinerary = None
-
-        messages = st.session_state.chats[st.session_state.current_chat]
-
-        if isinstance(messages, list):
-
-            for msg in reversed(messages):
-
-                if isinstance(msg, dict) and msg.get("role") == "assistant":
-                    itinerary = msg.get("content")
-                    break
-
-        # 🚨 guard check
-        if not itinerary:
-            st.warning("No valid assistant response found to send.")
-        
-        else:
-            try:
-                send_whatsapp_message(phone, str(itinerary))
-                st.success("Travel plan sent on WhatsApp!")
-            
-            except Exception as e:
-                st.error(f"Failed to send WhatsApp message: {e}")
