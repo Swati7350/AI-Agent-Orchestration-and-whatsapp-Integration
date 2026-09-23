@@ -15,9 +15,6 @@ from agent_store import (
     load_chat_history,
     save_chat_history
 )
-from whatsapp_service import (
-    send_whatsapp_message
-)
 # ===================================
 # PAGE CONFIG
 # ===================================
@@ -372,12 +369,28 @@ with left_col:
                 st.warning("No valid assistant response found to send.")
 
             else:
-                try:
-                    send_whatsapp_message(phone, str(itinerary))
-                    st.success("Discussion sent on WhatsApp!")
+                import urllib.parse
+                # Clean phone number — remove spaces, dashes, +
+                clean_phone = phone.strip().replace(" ", "").replace("-", "")
+                if not clean_phone.startswith("+"):
+                    # assume India if no country code
+                    if len(clean_phone) == 10:
+                        clean_phone = "91" + clean_phone
+                else:
+                    clean_phone = clean_phone.lstrip("+")
 
-                except Exception as e:
-                    st.error(f"Failed to send WhatsApp message: {e}")
+                encoded_msg = urllib.parse.quote(itinerary[:1000])
+                whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
+
+                st.markdown(
+                    f'<a href="{whatsapp_url}" target="_blank">'
+                    f'<button style="background-color:#25D366;color:white;'
+                    f'border:none;padding:10px 20px;border-radius:5px;'
+                    f'font-size:16px;cursor:pointer;">'
+                    f'📲 Open WhatsApp & Send</button></a>',
+                    unsafe_allow_html=True
+                )
+                st.info("Click the button above — WhatsApp will open with the message pre-filled. Just hit Send!")
 
 def toggle_chats():
     st.session_state.show_chats = (
