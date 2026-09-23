@@ -222,6 +222,30 @@ with st.sidebar:
                     f"Agent '{agent_name}' deleted!"
                 )
 
+# ===================================
+# SIDEBAR → CONTACT
+# ===================================
+with st.sidebar:
+    st.divider()
+    st.markdown("### 👩‍💻 About the Developer")
+
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        st.image(
+            "https://github.com/Swati7350.png",
+            width=60
+        )
+    with col2:
+        st.markdown("**Swati Gupta**")
+        st.markdown("AI & ML Developer")
+
+    st.markdown(
+        "📧 [swati.3999@gmail.com](mailto:swati.3999@gmail.com)"
+    )
+    st.markdown(
+        "🐙 [GitHub](https://github.com/Swati7350)"
+    )
+
 
 # ===================================
 # MAIN LAYOUT
