@@ -250,31 +250,20 @@ with left_col:
 
     MODEL_NAMES_GROQ = [
         "llama-3.3-70b-versatile",
-        "mixtral-8x7b-32768"
-    ]
-
-    MODEL_NAMES_OPENAI = [
-        "gpt-4o-mini"
+        "llama3-70b-8192",
+        "mixtral-8x7b-32768",
+        "gemma2-9b-it"
     ]
 
     provider = st.radio(
         "Select Provider:",
-        ("Groq", "OpenAI")
+        ("Groq",)
     )
 
-    if provider == "Groq":
-
-        selected_model = st.selectbox(
-            "Select Groq Model:",
-            MODEL_NAMES_GROQ
-        )
-
-    else:
-
-        selected_model = st.selectbox(
-            "Select OpenAI Model:",
-            MODEL_NAMES_OPENAI
-        )
+    selected_model = st.selectbox(
+        "Select Groq Model:",
+        MODEL_NAMES_GROQ
+    )
 
     allow_web_search = st.checkbox(
         "Allow Web Search"
